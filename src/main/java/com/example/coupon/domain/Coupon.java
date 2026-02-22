@@ -20,6 +20,7 @@ public class Coupon {
     @Column(name = "code", nullable = false, length = CODE_LENGTH)
     private String code;
 
+    @Lob
     @Column(name = "description", nullable = false)
     private String description;
 
