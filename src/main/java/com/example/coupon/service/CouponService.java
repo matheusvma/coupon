@@ -50,16 +50,17 @@ public class CouponService {
     }
 
     public CouponResponseDto delete(UUID id) {
-        Coupon coupon = repository.findById(id).orElse(null);
+        Coupon coupon = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coupon não encontrado"));
 
-        if(coupon != null || !coupon.isDeleted()) {
-            coupon.softDelete(OffsetDateTime.now());
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Coupon já foi deletado ou não existe");
+        if (coupon.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Coupon já foi deletado");
         }
 
-        repository.save(coupon);
-        return CouponResponseDto.toResponseDto(coupon);
+        coupon.softDelete(OffsetDateTime.now());
+
+        Coupon saved = repository.save(coupon);
+        return CouponResponseDto.toResponseDto(saved);
     }
 
 }
